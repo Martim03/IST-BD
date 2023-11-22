@@ -1,0 +1,936 @@
+<html>
+
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #191C1D;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      height: 250px;
+      background-color: #191C1D;
+      color: white;
+      border-color: #2A2C2A;
+    }
+
+    /* Dark Reader theme for form inputs */
+    .modal.fade input[type="text"],
+    .modal.fade input[type="password"],
+    .modal.fade input[type="email"],
+    .modal.fade input[type="number"],
+    .modal.fade input[type="date"],
+    textarea {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #666;
+    }
+
+    .number-input::-webkit-inner-spin-button,
+    .number-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .number-input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .number-input:focus {
+      outline: none;
+      border-color: #666;
+    }
+
+    /* Dark Reader theme for modal header */
+    .modal-header {
+      background-color: #191C1D;
+      color: #fff;
+      border-bottom: 1px solid #666;
+    }
+
+    /* Dark Reader theme for close button */
+    .modal-header .close {
+      color: #fff;
+    }
+
+    /* Dark Reader theme for modal body */
+    .modal-body {
+      background-color: #191C1D;
+      color: #fff;
+    }
+
+    /* Dark Reader theme for modal title */
+    .modal-title {
+      color: #fff;
+    }
+
+    .nav.nav-tabs .nav-link {
+      color: #008AEF;
+      /* Default text color */
+      border-color: #2A2C2A;
+      border-bottom-color: #2A2C2A;
+    }
+
+    .nav.nav-tabs .nav-link:hover {
+      color: #006CE0;
+      /* Hover text color */
+      background-color: #4b4a4a6e;
+      /* Hover background color */
+      border-color: #2A2C2A;
+      border-bottom-color: #2A2C2A;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .nav.nav-tabs .nav-link.active {
+      color: #006CE0;
+      /* Active text color */
+      background-color: #4b4a4a6e;
+      border-color: #2A2C2A;
+      border-bottom-color: #2A2C2A;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .nav.nav-tabs {
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      font-weight: bold;
+
+    }
+
+    table {
+      border: hidden;
+    }
+
+    .tableContainer {
+      width: 100%;
+      border: hidden;
+      border-radius: 10px;
+      background: #333;
+      overflow: auto;
+      color: #fff;
+      max-height: 500px;
+      min-height: fit-contents;
+      display: flex;
+      flex-direction: column;
+
+    }
+
+    .tableContainer tbody {
+      display: contents;
+      height: 125px;
+      overflow: auto;
+      color: #fff;
+      background: #333;
+    }
+
+    .tableContainer thead,
+    .tableContainer tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+      color: #fff;
+      background: #333;
+      border: 1px solid #666;
+    }
+
+    .tableContainer td,
+    .tableContainer th {
+      border: 1px solid #191c1d;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .tableContainer thead {
+      background: #191c1d;
+    }
+
+
+    #removeTable thead th:last-child,
+    #removeTable tbody td:last-child {
+      text-align: center;
+    }
+
+    #removeTable {
+      border-collapse: collapse;
+      border-color: #191c1d;
+    }
+
+    #removeTable th,
+    #removeTable td {
+      border: 1px solid #191C1D;
+      padding: 5px;
+    }
+
+    #removeTable th:last-child {
+      border-right: hidden;
+    }
+
+    .tablesWrapper {
+      display: flex;
+      justify-content: space-between;
+      width: 150%;
+      gap: 15px;
+    }
+
+    .clientTableContainer,
+    .productTableContainer {
+      flex: 1;
+      /* Distribute available space evenly */
+      width: 50%;
+      /* Occupy full width */
+      overflow: auto;
+      /* Allow table to scroll horizontally if it's too wide */
+    }
+
+    #modal-content-place-order {
+      display: flex;
+      width: 1200px;
+      position: absolute;
+      /* Set the positioning context to allow custom positioning */
+      top: 50%;
+      /* Adjust the desired vertical position from the top */
+      left: 50%;
+      /* Adjust the desired horizontal position from the left */
+      bottom: 20%;
+      transform: translate(-50%, -50%);
+    }
+
+    #col_table {
+      flex: 0 0 34%;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha384-L6CmDBE1NZCBFx/4Vehj+CbCj15R1gIeUySt3/5zQd7Mih+swpiRsVb4cIl2J6qW"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h2 class="text-center mb-4" style="color: white;">Admin Dashboard</h2>
+
+        <ul class="nav nav-tabs mb-4">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#product-controls">Product Controls</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#supplier-controls">Supplier Controls</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#client-controls">Customer Controls</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#order-controls">Order Controls</a>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="product-controls">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Register Product</h5>
+                    <p class="card-text">Add a new product to the inventory.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                      data-target="#registerProductModal">Register</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Remove Product</h5>
+                    <p class="card-text">Remove a product from the inventory.</p>
+                    <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#removeProductModal">Remove</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Change Product Price</h5>
+                    <p class="card-text">Modify the price of a product.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#changePriceModal">Change
+                      Price</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Change Product Description</h5>
+                    <p class="card-text">Modify the description of a product.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#changeDescriptionModal">Change
+                      Description</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="supplier-controls">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Register Supplier</h5>
+                    <p class="card-text">Add a new supplier to the system.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                      data-target="#registerSupplierModal">Register</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Remove Supplier</h5>
+                    <p class="card-text">Remove a supplier from the system.</p>
+                    <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#removeSupplierModal">Remove</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="client-controls">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Register Customer</h5>
+                    <p class="card-text">Add a new customer to the system.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                      data-target="#registerClientModal">Register</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Remove Customer</h5>
+                    <p class="card-text">Remove a customer from the system.</p>
+                    <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#removeClientModal">Remove</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="order-controls">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Place New Order</h5>
+                    <p class="card-text">Add a new order to the system.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#placeOrderModal">Place
+                      Order</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Pay Order</h5>
+                    <p class="card-text">Pay an existing order placed by a customer.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#payOrderModal">Pay Order</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals for inputting data -->
+  <!-- Register Product Modal -->
+  <div class="modal fade" id="registerProductModal" tabindex="-1" role="dialog"
+    aria-labelledby="registerProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerProductModalLabel">Register Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+            <input type="hidden" name="action" value="register_product">
+            <div class="form-group">
+              <label for="sku">SKU</label>
+              <input type="text" class="form-control" id="sku" name="sku" required>
+            </div>
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+            <div class="form-group">
+              <label for="price">Price</label>
+              <input type="number" class="form-control" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+              <label for="ean">EAN (optional)</label>
+              <input type="text" class="form-control" id="ean" name="ean">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remove Product Modal -->
+  <div class="modal fade" id="removeProductModal" tabindex="-1" role="dialog" aria-labelledby="removeProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="removeProductModalLabel">Remove Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tableContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Change Price Modal -->
+  <div class="modal fade" id="changePriceModal" tabindex="-1" role="dialog" aria-labelledby="changePriceModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document"> <!-- changed modal-dialog to modal-lg for a larger modal -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePriceModalLabel">Change Product Price</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row"> <!-- Bootstrap row for splitting content -->
+            <div class="col-md-6"> <!-- left half -->
+              <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+                <input type="hidden" name="action" value="change_product_price">
+                <div class="form-group">
+                  <label for="skuPrice">SKU</label>
+                  <input type="text" class="form-control" id="skuPrice" name="skuPrice" required>
+                </div>
+                <div class="form-group">
+                  <label for="newPrice">New Price</label>
+                  <input type="number" class="form-control" id="newPrice" name="newPrice" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+            <div class="col-md-6">
+              <div class="tableContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Product Description Modal -->
+  <div class="modal fade" id="changeDescriptionModal" tabindex="-1" role="dialog"
+    aria-labelledby="changeDescriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changeDescriptionModalLabel">Change Product Description</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+                <input type="hidden" name="action" value="change_product_description">
+                <div class="form-group">
+                  <label for="skuDescription">SKU</label>
+                  <input type="text" class="form-control" id="skuDescription" name="skuDescription" required>
+                </div>
+                <div class="form-group">
+                  <label for="newDescription">New Description</label>
+                  <input type="text" class="form-control" id="newDescription" name="newDescription" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+            <div class="col-md-6">
+              <div class="tableContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Register Supplier Modal -->
+  <div class="modal fade" id="registerSupplierModal" tabindex="-1" role="dialog"
+    aria-labelledby="registerSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerSupplierModalLabel">Register Supplier</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+            <input type="hidden" name="action" value="register_supplier">
+            <div class="form-group">
+              <label for="tin">TIN</label>
+              <input type="text" class="form-control" id="tin" name="tin" required>
+            </div>
+            <div class="form-group">
+              <label for="supplierName">Name</label>
+              <input type="text" class="form-control" id="supplierName" name="supplierName" required>
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+              <label for="supplierSKU">SKU</label>
+              <input type="text" class="form-control" id="supplierSKU" name="supplierSKU" required>
+            </div>
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remove Supplier Modal -->
+  <div class="modal fade" id="removeSupplierModal" tabindex="-1" role="dialog"
+    aria-labelledby="removeSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="removeSupplierModalLabel">Remove Supplier</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tableContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Register Customer Modal -->
+  <div class="modal fade" id="registerClientModal" tabindex="-1" role="dialog"
+    aria-labelledby="registerClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerClientModalLabel">Register Customer</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+            <input type="hidden" name="action" value="register_client">
+            <div class="form-group">
+              <label for="clientID">Customer Number</label>
+              <input type="text" class="form-control" id="clientID" name="clientID" required>
+            </div>
+            <div class="form-group">
+              <label for="clientName">Name</label>
+              <input type="text" class="form-control" id="clientName" name="clientName" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+              <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+            </div>
+            <div class="form-group">
+              <label for="clientAddress">Address</label>
+              <input type="text" class="form-control" id="clientAddress" name="clientAddress" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remove Customer Modal -->
+  <div class="modal fade" id="removeClientModal" tabindex="-1" role="dialog" aria-labelledby="removeClientModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="removeClientModalLabel">Remove Customer</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tableContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Pay Order Modal -->
+  <div class="modal fade" id="payOrderModal" tabindex="-1" role="dialog" aria-labelledby="payOrderModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="payOrderModalLabel">Pay Order</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tableContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Place Order Modal -->
+  <div class="modal fade" id="placeOrderModal" tabindex="-1" role="document" aria-labelledby="placeOrderModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div id="modal-content-place-order" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="placeOrderModalLabel">Place Order</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <form action="/ist1103432/cgi-bin/python_backend_admin.cgi" method="POST">
+                <input type="hidden" name="action" value="place_order">
+                <div class="form-group">
+                  <label for="place_order_cust_no">Customer Number</label>
+                  <input type="text" class="form-control" id="place_order_cust_no" name="place_order_cust_no" required>
+                </div>
+                <div class="form-group">
+                  <label for="place_order_no">Order Number</label>
+                  <input type="text" class="form-control" id="place_order_no" name="place_order_no" required>
+                </div>
+                <div class="form-group">
+                  <label for="place_order_date">Date</label>
+                  <input type="date" class="form-control" id="place_order_date" name="place_order_date" required>
+                </div>
+                <div id="orderItemsContainer">
+                  <div class="form-row mb-3">
+                    <div class="col">
+                      <label for="place_order_sku">SKU</label>
+                      <input type="text" class="form-control" id="place_order_sku" name="place_order_sku" required>
+                    </div>
+                    <div class="col">
+                      <label for="place_order_quantity">Quantity</label>
+                      <input type="number" class="form-control" id="place_order_quantity" name="place_order_quantity"
+                        required>
+                    </div>
+                    <div class="col d-flex align-items-end">
+                      <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center mb-3">
+                  <button type="button" class="btn btn-primary add-item-btn">Add Item</button>
+                </div>
+                <button type="submit" class="btn btn-primary">Place Order</button>
+              </form>
+            </div>
+            <div id="col_table" class="col-md-6">
+              <div class="tablesWrapper">
+                <div class="tableContainer productTableContainer"></div>
+                <div class="tableContainer clientTableContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Add item button click handler
+      $('.add-item-btn').click(function () {
+        var newItem = `
+          <div class="form-row mb-3">
+            <div class="col">
+              <label for="place_order_sku">SKU</label>
+              <input type="text" class="form-control" id="place_order_sku" name="place_order_sku" required>
+            </div>
+            <div class="col">
+              <label for="place_order_quantity">Quantity</label>
+              <input type="number" class="form-control" id="place_order_quantity" name="place_order_quantity" required>
+            </div>
+            <div class="col d-flex align-items-end">
+              <button type="button" class="btn btn-danger remove-item-btn">Remove</button>
+            </div>
+          </div>
+        `;
+        $('#orderItemsContainer').append(newItem);
+      });
+
+      // Remove item button click handler
+      $('#orderItemsContainer').on('click', '.remove-item-btn', function () {
+        $(this).closest('.form-row').remove();
+      });
+    });
+    $("#removeProductModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_products.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table id ="removeTable" border="1"><thead><tr><th>SKU</th><th>Name</th><th>Action</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td ><button class="btn btn-danger removeProductBtn" data-sku="' + data[i][0] + '">Remove</button></td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+
+
+    $(document).on('click', '.removeProductBtn', function () {
+      var sku = $(this).attr('data-sku');
+
+      $.ajax({
+        url: "/ist1103432/cgi-bin/python_backend_admin.cgi",
+        type: "POST",
+        data: {"action": "remove_product", "sku": sku},
+        success: function (response) {
+          document.open();
+          document.write(response);
+          document.close();
+        }
+      });
+    });
+
+    $("#changePriceModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_products.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table border="1"><thead><tr><th>SKU</th><th>Name</th><th>Current Price</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td>' + data[i][3] + '</td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+    $("#placeOrderModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_products.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<h3 style="text-align: center;" >Products</h3><table border="1"><thead><tr><th>SKU</th><th>Name</th><th>Current Price</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td>' + data[i][3] + '</td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".productTableContainer").html(table);
+        }
+      });
+
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_clients.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<h3 style="text-align: center;" >Clients</h3><table border="1"><thead><tr><th>Customer Number</th><th>Name</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".clientTableContainer").html(table);
+        }
+      });
+
+    });
+
+
+    $("#changeDescriptionModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_products.cgi",  // Use your CGI script URL
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table border="1"><thead><tr><th>SKU</th><th>Name</th><th>Current Description</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td>' + data[i][2] + '</td></tr>';
+          }
+          table += '</table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+    $("#payOrderModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_orders_non_paid.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table border="1"><thead><tr><th>Non-Paid Orders</th><th>Customer Number</th><th>Action</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td><button class="btn btn-primary payBtn" data-order="' + data[i][0] + '" data-cust="' + data[i][1] + '">Pay</button></td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+    $(document).on('click', '.payBtn', function () {
+      var order_no = $(this).attr('data-order');
+      var cust_no = $(this).attr('data-cust');
+
+      $.ajax({
+        url: "/ist1103432/cgi-bin/python_backend_admin.cgi",
+        type: "POST",
+        data: {"action": "pay_order", "pay_order_no": order_no, "pay_cust_no": cust_no},
+        success: function (response) {
+          document.open();
+          document.write(response);
+          document.close();
+        }
+      });
+    });
+
+    $("#removeClientModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_clients.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table border="1"><thead><tr><th>Customer Number</th><th>Name</th><th>Action</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td><button class="btn btn-danger removeClientBtn" data-customer="' + data[i][0] + '">Remove</button></td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+    $(document).on('click', '.removeClientBtn', function () {
+      var customer_no = $(this).attr('data-customer');
+
+      $.ajax({
+        url: "/ist1103432/cgi-bin/python_backend_admin.cgi",
+        type: "POST",
+        data: {"action": "remove_client", "customer_no": customer_no},
+        success: function (response) {
+          document.open();
+          document.write(response);
+          document.close();
+        }
+      });
+    });
+
+    $("#removeSupplierModal").on('show.bs.modal', function () {
+      console.log('Modal event triggered');
+      $.ajax({
+        url: "/ist1103432/cgi-bin/get_suppliers.cgi",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+          var table = '<table border="1"><thead><tr><th>TIN</th><th>Supplier Name</th><th>Supplying SKU</th><th>Action</th></tr></thead><tbody>';
+          for (var i = 0; i < data.length; i++) {
+            table += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td><td>' + data[i][3] + '</td><td><button class="btn btn-danger removeSupplierBtn" data-tin="' + data[i][0] + '">Remove</button></td></tr>';
+          }
+          table += '</tbody></table>';
+          $(".tableContainer").html(table);
+        }
+      });
+    });
+
+    $(document).on('click', '.removeSupplierBtn', function () {
+      var supplier_tin = $(this).attr('data-tin');
+
+      $.ajax({
+        url: "/ist1103432/cgi-bin/python_backend_admin.cgi",
+        type: "POST",
+        data: {"action": "remove_supplier", "supplier_tin": supplier_tin},
+        success: function (response) {
+          document.open();
+          document.write(response);
+          document.close();
+        }
+      });
+    });
+
+
+  </script>
+
+  </div>
+  </div>
+  </div>
+
+</body>
+
+</html>
